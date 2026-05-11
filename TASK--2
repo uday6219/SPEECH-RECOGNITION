@@ -1,0 +1,48 @@
+# Install necessary libraries
+# SpeechRecognition: For performing speech recognition.
+# pydub: For handling and generating audio files (e.g., creating a dummy audio).
+# gTTS: For generating speech from text.
+!pip install SpeechRecognition pydub gTTS
+import speech_recognition as sr
+import os
+
+# Set the audio file name to the user-provided file
+audio_file_name = '/content/sample-speech-1m.wav'
+
+print(f"Using audio file: {audio_file_name}")
+import speech_recognition as sr
+
+def transcribe_audio(audio_filepath):
+    """
+    Transcribes an audio file using the Google Web Speech API.
+
+    Args:
+        audio_filepath (str): The path to the audio file.
+
+    Returns:
+        str: The transcribed text, or an error message if transcription fails.
+    """
+    r = sr.Recognizer()
+    try:
+        with sr.AudioFile(audio_filepath) as source:
+            print(f"Processing audio file: {audio_filepath}")
+            audio_data = r.record(source)  # Read the entire audio file
+            print("Audio loaded. Attempting to transcribe...")
+            text = r.recognize_google(audio_data) # Use Google's speech recognition
+            return text
+    except sr.UnknownValueError:
+        return "Google Speech Recognition could not understand audio"
+    except sr.RequestError as e:
+        return f"Could not request results from Google Speech Recognition service; {e}"
+    except FileNotFoundError:
+        return f"Audio file not found at {audio_filepath}"
+    except Exception as e:
+        return f"An unexpected error occurred: {e}"
+
+# Demonstrate the transcription function
+if os.path.exists(audio_file_name):
+    transcribed_text = transcribe_audio(audio_file_name)
+    print(f"\n--- Transcription Result ---")
+    print(transcribed_text)
+else:
+    print(f"Error: Audio file '{audio_file_name}' was not created. Cannot perform transcription.")
